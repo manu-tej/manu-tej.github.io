@@ -1,0 +1,52 @@
+/* Change the background color of the body */
+body {
+    background-color: #f6f8fa;
+  }
+  
+  /* Change the font and color of the page heading */
+  h1 {
+    font-family: Arial, sans-serif;
+    color: #0366d6;
+  }
+  
+  /* Change the color of links */
+  a {
+    color: #0366d6;
+  }
+  
+  /* Change the color of links when they are hovered over */
+  a:hover {
+    color: #1a73e8;
+  }
+  
+  /* Change the color of code blocks */
+  pre, code {
+    background-color: #f6f8fa;
+    color: #24292e;
+  }
+  
+  /* Change the font and color of code block text */
+  code {
+    font-family: Consolas, monospace;
+  }
+  
+  /* Change the style of unordered lists */
+  ul {
+    list-style-type: square;
+    padding-left: 1em;
+  }
+  
+  /* Change the color of blockquotes */
+  blockquote {
+    background-color: #f6f8fa;
+    border-left: 4px solid #0366d6;
+    margin: 0;
+    padding: 0.5em 1em;
+  }
+  
+  /* Change the font and color of blockquote text */
+  blockquote p {
+    font-style: italic;
+    color: #24292e;
+  }
+  
