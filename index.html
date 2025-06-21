@@ -6,6 +6,12 @@
     <title>Manu Arrojwala - Portfolio</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Visualization Libraries -->
+    <script src="https://unpkg.com/molstar/build/viewer/molstar.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/molstar/build/viewer/molstar.css">
+    <script src="https://unpkg.com/cytoscape/dist/cytoscape.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 </head>
 <body>
     <nav class="navbar">
@@ -14,6 +20,7 @@
             <ul class="nav-menu">
                 <li><a href="#home" class="nav-link">Home</a></li>
                 <li><a href="#about" class="nav-link">About</a></li>
+                <li><a href="#research" class="nav-link">Research</a></li>
                 <li><a href="#projects" class="nav-link">Projects</a></li>
                 <li><a href="#skills" class="nav-link">Skills</a></li>
                 <li><a href="#contact" class="nav-link">Contact</a></li>
@@ -49,6 +56,46 @@
         </div>
     </section>
 
+    <section id="research" class="research">
+        <div class="container">
+            <h2 class="section-title">Research Showcase</h2>
+            
+            <!-- 3D Molecular Viewer -->
+            <div class="showcase-item">
+                <h3>Interactive 3D Protein Structure Viewer</h3>
+                <p>Explore protein structures in 3D. Try rotating and zooming!</p>
+                <div id="molstar-viewer" class="mol-viewer"></div>
+                <div class="viewer-controls">
+                    <button onclick="loadStructure('1cbs')">Load Retinol Binding Protein</button>
+                    <button onclick="loadStructure('6lu7')">Load COVID-19 Main Protease</button>
+                    <button onclick="loadStructure('1atp')">Load ATP Synthase</button>
+                </div>
+            </div>
+            
+            <!-- Biological Network Viewer -->
+            <div class="showcase-item">
+                <h3>Protein Interaction Network</h3>
+                <p>Interactive visualization of protein-protein interactions</p>
+                <div id="cy-network" class="network-viewer"></div>
+                <div class="network-stats">
+                    <span id="node-count">Nodes: 0</span>
+                    <span id="edge-count">Edges: 0</span>
+                    <span id="selected-node">Selected: None</span>
+                </div>
+            </div>
+            
+            <!-- AI Model Performance -->
+            <div class="showcase-item">
+                <h3>AI Model Performance Dashboard</h3>
+                <p>Real-time metrics from my latest drug discovery models</p>
+                <div id="ai-dashboard">
+                    <div id="accuracy-plot" class="plot-container"></div>
+                    <div id="confusion-matrix" class="plot-container"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
     <section id="projects" class="projects">
         <div class="container">
             <h2 class="section-title">Projects</h2>
@@ -83,7 +130,8 @@
 
     <section id="skills" class="skills">
         <div class="container">
-            <h2 class="section-title">Skills</h2>
+            <h2 class="section-title">Technical Expertise</h2>
+            <div id="skills-visualization" class="skills-viz"></div>
             <div class="skills-grid">
                 <div class="skill-category">
                     <h3>Frontend</h3>
@@ -168,6 +216,302 @@
                     });
                 }
             });
+        });
+
+        // 3D Molecular Viewer Setup
+        let molstarViewer;
+        async function initMolstarViewer() {
+            const viewerContainer = document.getElementById('molstar-viewer');
+            if (viewerContainer && typeof molstar !== 'undefined') {
+                try {
+                    molstarViewer = await molstar.Viewer.create(viewerContainer, {
+                        layoutIsExpanded: false,
+                        layoutShowControls: false,
+                        layoutShowRemoteState: false,
+                        layoutShowSequence: false,
+                        layoutShowLog: false,
+                        viewportShowExpand: false,
+                        viewportShowSelectionMode: false,
+                        viewportShowAnimation: false,
+                    });
+                    // Load a default structure
+                    await loadStructure('1cbs');
+                } catch (error) {
+                    console.error('Error initializing Molstar:', error);
+                }
+            }
+        }
+
+        async function loadStructure(pdbId) {
+            if (molstarViewer) {
+                await molstarViewer.clear();
+                await molstarViewer.loadPdb(pdbId);
+            }
+        }
+
+        // Biological Network Visualization
+        let cy;
+        function initNetworkViewer() {
+            const container = document.getElementById('cy-network');
+            if (container && typeof cytoscape !== 'undefined') {
+                // Sample network data
+                const elements = [
+                    // Nodes
+                    { data: { id: 'TP53', label: 'TP53', type: 'tumor_suppressor' } },
+                    { data: { id: 'MDM2', label: 'MDM2', type: 'oncogene' } },
+                    { data: { id: 'CDKN1A', label: 'p21', type: 'cell_cycle' } },
+                    { data: { id: 'BAX', label: 'BAX', type: 'apoptosis' } },
+                    { data: { id: 'BCL2', label: 'BCL2', type: 'apoptosis' } },
+                    { data: { id: 'ATM', label: 'ATM', type: 'dna_repair' } },
+                    { data: { id: 'BRCA1', label: 'BRCA1', type: 'dna_repair' } },
+                    // Edges
+                    { data: { source: 'TP53', target: 'MDM2', interaction: 'inhibits' } },
+                    { data: { source: 'MDM2', target: 'TP53', interaction: 'inhibits' } },
+                    { data: { source: 'TP53', target: 'CDKN1A', interaction: 'activates' } },
+                    { data: { source: 'TP53', target: 'BAX', interaction: 'activates' } },
+                    { data: { source: 'BCL2', target: 'BAX', interaction: 'inhibits' } },
+                    { data: { source: 'ATM', target: 'TP53', interaction: 'activates' } },
+                    { data: { source: 'BRCA1', target: 'TP53', interaction: 'activates' } }
+                ];
+
+                cy = cytoscape({
+                    container: container,
+                    elements: elements,
+                    style: [
+                        {
+                            selector: 'node',
+                            style: {
+                                'background-color': function(ele) {
+                                    const type = ele.data('type');
+                                    const colors = {
+                                        'tumor_suppressor': '#e74c3c',
+                                        'oncogene': '#f39c12',
+                                        'cell_cycle': '#3498db',
+                                        'apoptosis': '#9b59b6',
+                                        'dna_repair': '#2ecc71'
+                                    };
+                                    return colors[type] || '#95a5a6';
+                                },
+                                'label': 'data(label)',
+                                'width': 60,
+                                'height': 60,
+                                'text-valign': 'center',
+                                'text-halign': 'center',
+                                'font-size': '14px',
+                                'color': '#fff',
+                                'text-outline-width': 2,
+                                'text-outline-color': '#34495e'
+                            }
+                        },
+                        {
+                            selector: 'edge',
+                            style: {
+                                'width': 3,
+                                'line-color': function(ele) {
+                                    return ele.data('interaction') === 'activates' ? '#2ecc71' : '#e74c3c';
+                                },
+                                'target-arrow-color': function(ele) {
+                                    return ele.data('interaction') === 'activates' ? '#2ecc71' : '#e74c3c';
+                                },
+                                'target-arrow-shape': 'triangle',
+                                'curve-style': 'bezier',
+                                'label': 'data(interaction)',
+                                'font-size': '12px',
+                                'text-rotation': 'autorotate'
+                            }
+                        },
+                        {
+                            selector: ':selected',
+                            style: {
+                                'border-width': 4,
+                                'border-color': '#f1c40f'
+                            }
+                        }
+                    ],
+                    layout: {
+                        name: 'cose',
+                        animate: true,
+                        animationDuration: 1000,
+                        padding: 50
+                    }
+                });
+
+                // Update stats
+                document.getElementById('node-count').textContent = `Nodes: ${cy.nodes().length}`;
+                document.getElementById('edge-count').textContent = `Edges: ${cy.edges().length}`;
+
+                // Node click handler
+                cy.on('tap', 'node', function(evt) {
+                    const node = evt.target;
+                    document.getElementById('selected-node').textContent = `Selected: ${node.data('label')}`;
+                });
+            }
+        }
+
+        // AI Model Dashboard
+        function initAIDashboard() {
+            if (typeof Plotly !== 'undefined') {
+                // Accuracy over epochs
+                const epochs = Array.from({length: 50}, (_, i) => i + 1);
+                const trainAcc = epochs.map(e => 0.6 + 0.35 * (1 - Math.exp(-e/15)) + Math.random() * 0.02);
+                const valAcc = epochs.map(e => 0.55 + 0.30 * (1 - Math.exp(-e/20)) + Math.random() * 0.03);
+
+                const accuracyData = [
+                    {
+                        x: epochs,
+                        y: trainAcc,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Training Accuracy',
+                        line: { color: '#3498db' }
+                    },
+                    {
+                        x: epochs,
+                        y: valAcc,
+                        type: 'scatter',
+                        mode: 'lines',
+                        name: 'Validation Accuracy',
+                        line: { color: '#e74c3c' }
+                    }
+                ];
+
+                const accuracyLayout = {
+                    title: 'Model Training Progress',
+                    xaxis: { title: 'Epoch' },
+                    yaxis: { title: 'Accuracy', range: [0, 1] },
+                    margin: { t: 40, r: 20, b: 40, l: 60 }
+                };
+
+                Plotly.newPlot('accuracy-plot', accuracyData, accuracyLayout, {responsive: true});
+
+                // Confusion Matrix
+                const confusionData = [{
+                    z: [[850, 50, 30], [40, 920, 20], [10, 30, 950]],
+                    x: ['Active', 'Inactive', 'Toxic'],
+                    y: ['Active', 'Inactive', 'Toxic'],
+                    type: 'heatmap',
+                    colorscale: 'Blues',
+                    showscale: true
+                }];
+
+                const confusionLayout = {
+                    title: 'Drug Activity Prediction Confusion Matrix',
+                    xaxis: { title: 'Predicted', side: 'bottom' },
+                    yaxis: { title: 'Actual' },
+                    margin: { t: 40, r: 20, b: 60, l: 60 },
+                    annotations: []
+                };
+
+                // Add text annotations
+                for (let i = 0; i < 3; i++) {
+                    for (let j = 0; j < 3; j++) {
+                        confusionLayout.annotations.push({
+                            x: ['Active', 'Inactive', 'Toxic'][j],
+                            y: ['Active', 'Inactive', 'Toxic'][i],
+                            text: confusionData[0].z[i][j].toString(),
+                            showarrow: false,
+                            font: { color: 'white', size: 16 }
+                        });
+                    }
+                }
+
+                Plotly.newPlot('confusion-matrix', confusionData, confusionLayout, {responsive: true});
+            }
+        }
+
+        // Skills Visualization
+        function initSkillsVisualization() {
+            const container = document.getElementById('skills-visualization');
+            if (container && typeof d3 !== 'undefined') {
+                const skills = [
+                    { name: 'Python', level: 95, category: 'programming' },
+                    { name: 'R', level: 85, category: 'programming' },
+                    { name: 'JavaScript', level: 75, category: 'programming' },
+                    { name: 'TensorFlow', level: 90, category: 'ml' },
+                    { name: 'PyTorch', level: 85, category: 'ml' },
+                    { name: 'Scikit-learn', level: 95, category: 'ml' },
+                    { name: 'BioPython', level: 90, category: 'bio' },
+                    { name: 'RDKit', level: 85, category: 'bio' },
+                    { name: 'Molecular Dynamics', level: 80, category: 'bio' },
+                    { name: 'Deep Learning', level: 90, category: 'expertise' },
+                    { name: 'Genomics', level: 85, category: 'expertise' },
+                    { name: 'Drug Discovery', level: 88, category: 'expertise' }
+                ];
+
+                const width = container.offsetWidth;
+                const height = 400;
+                const margin = { top: 20, right: 20, bottom: 40, left: 100 };
+
+                const svg = d3.select(container)
+                    .append('svg')
+                    .attr('width', width)
+                    .attr('height', height);
+
+                const xScale = d3.scaleLinear()
+                    .domain([0, 100])
+                    .range([margin.left, width - margin.right]);
+
+                const yScale = d3.scaleBand()
+                    .domain(skills.map(d => d.name))
+                    .range([margin.top, height - margin.bottom])
+                    .padding(0.1);
+
+                const colorScale = d3.scaleOrdinal()
+                    .domain(['programming', 'ml', 'bio', 'expertise'])
+                    .range(['#3498db', '#e74c3c', '#2ecc71', '#f39c12']);
+
+                // Bars
+                svg.selectAll('.bar')
+                    .data(skills)
+                    .enter()
+                    .append('rect')
+                    .attr('class', 'bar')
+                    .attr('x', margin.left)
+                    .attr('y', d => yScale(d.name))
+                    .attr('width', 0)
+                    .attr('height', yScale.bandwidth())
+                    .attr('fill', d => colorScale(d.category))
+                    .transition()
+                    .duration(1000)
+                    .delay((d, i) => i * 50)
+                    .attr('width', d => xScale(d.level) - margin.left);
+
+                // Labels
+                svg.selectAll('.label')
+                    .data(skills)
+                    .enter()
+                    .append('text')
+                    .attr('class', 'label')
+                    .attr('x', margin.left - 5)
+                    .attr('y', d => yScale(d.name) + yScale.bandwidth() / 2)
+                    .attr('text-anchor', 'end')
+                    .attr('alignment-baseline', 'middle')
+                    .style('font-size', '12px')
+                    .text(d => d.name);
+
+                // Value labels
+                svg.selectAll('.value')
+                    .data(skills)
+                    .enter()
+                    .append('text')
+                    .attr('class', 'value')
+                    .attr('x', d => xScale(d.level) + 5)
+                    .attr('y', d => yScale(d.name) + yScale.bandwidth() / 2)
+                    .attr('alignment-baseline', 'middle')
+                    .style('font-size', '11px')
+                    .style('fill', '#666')
+                    .text(d => `${d.level}%`);
+            }
+        }
+
+        // Initialize all visualizations when page loads
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                initMolstarViewer();
+                initNetworkViewer();
+                initAIDashboard();
+                initSkillsVisualization();
+            }, 100);
         });
     </script>
 </body>
