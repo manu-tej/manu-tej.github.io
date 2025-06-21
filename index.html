@@ -284,11 +284,11 @@
                                 'background-color': function(ele) {
                                     const type = ele.data('type');
                                     const colors = {
-                                        'tumor_suppressor': '#e74c3c',
-                                        'oncogene': '#f39c12',
-                                        'cell_cycle': '#3498db',
-                                        'apoptosis': '#9b59b6',
-                                        'dna_repair': '#2ecc71'
+                                        'tumor_suppressor': '#FF6E40',
+                                        'oncogene': '#FFA726',
+                                        'cell_cycle': '#00D9FF',
+                                        'apoptosis': '#7C4DFF',
+                                        'dna_repair': '#00E676'
                                     };
                                     return colors[type] || '#95a5a6';
                                 },
@@ -308,10 +308,10 @@
                             style: {
                                 'width': 3,
                                 'line-color': function(ele) {
-                                    return ele.data('interaction') === 'activates' ? '#2ecc71' : '#e74c3c';
+                                    return ele.data('interaction') === 'activates' ? '#00E676' : '#FF6E40';
                                 },
                                 'target-arrow-color': function(ele) {
-                                    return ele.data('interaction') === 'activates' ? '#2ecc71' : '#e74c3c';
+                                    return ele.data('interaction') === 'activates' ? '#00E676' : '#FF6E40';
                                 },
                                 'target-arrow-shape': 'triangle',
                                 'curve-style': 'bezier',
@@ -324,7 +324,7 @@
                             selector: ':selected',
                             style: {
                                 'border-width': 4,
-                                'border-color': '#f1c40f'
+                                'border-color': '#00D9FF'
                             }
                         }
                     ],
@@ -363,7 +363,7 @@
                         type: 'scatter',
                         mode: 'lines',
                         name: 'Training Accuracy',
-                        line: { color: '#3498db' }
+                        line: { color: '#00D9FF' }
                     },
                     {
                         x: epochs,
@@ -371,7 +371,7 @@
                         type: 'scatter',
                         mode: 'lines',
                         name: 'Validation Accuracy',
-                        line: { color: '#e74c3c' }
+                        line: { color: '#7C4DFF' }
                     }
                 ];
 
@@ -424,18 +424,18 @@
             const container = document.getElementById('skills-visualization');
             if (container && typeof d3 !== 'undefined') {
                 const skills = [
-                    { name: 'Python', level: 95, category: 'programming' },
-                    { name: 'R', level: 85, category: 'programming' },
-                    { name: 'JavaScript', level: 75, category: 'programming' },
-                    { name: 'TensorFlow', level: 90, category: 'ml' },
-                    { name: 'PyTorch', level: 85, category: 'ml' },
-                    { name: 'Scikit-learn', level: 95, category: 'ml' },
-                    { name: 'BioPython', level: 90, category: 'bio' },
-                    { name: 'RDKit', level: 85, category: 'bio' },
-                    { name: 'Molecular Dynamics', level: 80, category: 'bio' },
-                    { name: 'Deep Learning', level: 90, category: 'expertise' },
-                    { name: 'Genomics', level: 85, category: 'expertise' },
-                    { name: 'Drug Discovery', level: 88, category: 'expertise' }
+                    { name: '[Programming Language 1]', level: 90, category: 'programming' },
+                    { name: '[Programming Language 2]', level: 85, category: 'programming' },
+                    { name: '[Programming Language 3]', level: 75, category: 'programming' },
+                    { name: '[ML Framework 1]', level: 90, category: 'ml' },
+                    { name: '[ML Framework 2]', level: 85, category: 'ml' },
+                    { name: '[ML Tool]', level: 80, category: 'ml' },
+                    { name: '[Bio Tool 1]', level: 90, category: 'bio' },
+                    { name: '[Bio Tool 2]', level: 85, category: 'bio' },
+                    { name: '[Bio Technique]', level: 80, category: 'bio' },
+                    { name: '[Expertise Area 1]', level: 90, category: 'expertise' },
+                    { name: '[Expertise Area 2]', level: 85, category: 'expertise' },
+                    { name: '[Expertise Area 3]', level: 80, category: 'expertise' }
                 ];
 
                 const width = container.offsetWidth;
@@ -458,7 +458,7 @@
 
                 const colorScale = d3.scaleOrdinal()
                     .domain(['programming', 'ml', 'bio', 'expertise'])
-                    .range(['#3498db', '#e74c3c', '#2ecc71', '#f39c12']);
+                    .range(['#00D9FF', '#FF6E40', '#00E676', '#FFA726']);
 
                 // Bars
                 svg.selectAll('.bar')
